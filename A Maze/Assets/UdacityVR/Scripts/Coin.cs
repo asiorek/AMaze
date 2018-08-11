@@ -13,7 +13,7 @@ public class Coin : MonoBehaviour
     {
         // OPTIONAL-CHALLENGE: Animate the coin rotating
         // TIP: You could use a method from the Transform class
-        this.transform.Rotate(0f, Time.deltaTime, 0f);
+        this.transform.Rotate(new Vector3(0f, Time.deltaTime * 150, 0f));
     }
 
 
