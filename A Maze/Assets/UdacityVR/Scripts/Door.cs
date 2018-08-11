@@ -13,7 +13,9 @@ public class Door : MonoBehaviour
 
     // TODO: Create variables to reference the components we need access to
     // Declare an AudioSource named 'audioSource' and get a reference to the audio source in Start()
-    public AudioSource audioSource;
+    private AudioSource audioSource;
+    public AudioClip doorOpen;
+    public AudioClip doorLocked;
 
     // TODO: Create variables to track the gameplay states
     // Declare a boolean named 'locked' to track if the door has been unlocked and initialize it to 'true'
@@ -23,26 +25,34 @@ public class Door : MonoBehaviour
 
     // TODO: Create variables to hold rotations used when animating the door opening
     // Declare a Quaternion named 'leftDoorStartRotation' to hold the start rotation of the 'Left_Door' game object
-
+    Quaternion leftDoorStartRotation;
     // Declare a Quaternion named "leftDoorEndRotation" to hold the end rotation of the 'Left_Door' game object
+    Quaternion leftDoorEndRotation;
     // Declare a Quaternion named 'rightDoorStartRotation' to hold the start rotation of the 'Right_Door' game object
+    Quaternion rightDoorStartRotation;
     // Declare a Quaternion named 'rightDoorEndRotation' to hold the end rotation of the 'Right_Door' game object
+    Quaternion rightDoorEndRotation;
 
     // TODO: Create variables to control the speed of the interpolation when animating the door opening
     // Declare a float named 'timer' to track the Quaternion.Slerp() interpolation and initialize it to for example '0f'
+    float timer = 0f;
     // Declare a float named 'rotationTime' to set the Quaternion.Slerp() interpolation speed and initialize it to for example '10f'
-
+    float rotationTime = 5f;
 
     void Start()
     {
         // TODO: Get a reference to the audio source
         // Use GetComponent<>() to get a reference to the AudioSource component and assign it to the 'audioSource'
-
+        audioSource = GetComponent<AudioSource>();
         // TODO: Set start and end rotation values used when animating the door opening
         // Use 'leftDoor' to get the start rotation of the 'Left_Door' game object and assign it to 'leftDoorStartRotation'
+        leftDoorStartRotation = leftDoor.transform.rotation;
         // Use 'leftDoorStartRotation' and Quaternion.Euler() to set the end rotation of the 'Left_Door' game object and assign it to 'leftDoorEndRotation'
+        leftDoorEndRotation = leftDoorStartRotation * Quaternion.Euler(0f, 0f, -90f);
         // Use 'rightDoor' to get the start rotation of the 'Right_Door' game object and assign it to 'rightDoorStartRotation'
+        rightDoorStartRotation = rightDoor.transform.rotation;
         // Use 'rightDoorStartRotation' and Quaternion.Euler() to set the end rotation of the 'Right_Door' game object and assign it to 'rightDoorEndRotation'
+        rightDoorEndRotation = rightDoorStartRotation * Quaternion.Euler(0f, 0f, 90f);
     }
 
 
@@ -50,6 +60,12 @@ public class Door : MonoBehaviour
     {
         // TODO: If the door is opening, animate the 'Left_Door' and 'Right_Door' game objects rotating open
         // Use 'opening' to check if the door is opening...
+        if (opening)
+        {
+            leftDoor.transform.rotation = Quaternion.Slerp(leftDoorStartRotation, leftDoorEndRotation, timer / rotationTime);
+            rightDoor.transform.rotation = Quaternion.Slerp(rightDoorStartRotation, rightDoorEndRotation, timer / rotationTime);
+            timer += Time.deltaTime;
+        }
         // ... use Quaternion.Slerp() to interpolate from 'leftDoorStartRotation' to 'leftDoorEndRotation' by the interpolation time 'timer / rotationTime' and assign it to the 'leftDoor' rotation
         // ... use Quaternion.Slerp() to interpolate from 'rightDoorStartRotation' to 'rightDoorEndRotation' by the interpolation time 'timer / rotationTime' and assign it to the 'leftDoor' rotation
         // ... use Time.deltaTime to increment 'timer'
@@ -67,6 +83,26 @@ public class Door : MonoBehaviour
 
         // TODO: If the door is unlocked, start animating the door rotating open and play a sound to indicate the door is opening
         // Use 'locked' to check if the door is locked and ...
+        if (!locked)
+        {
+            opening = true;
+            audioSource.clip = doorOpen;
+            audioSource.Play();
+            foreach (Collider item in this.GetComponentsInChildren<Collider>())
+            {
+                item.enabled = false;
+            }
+        }
+        else
+        {
+            audioSource.clip = doorLocked;
+            audioSource.Play();
+            this.GetComponent<GvrAllEventsTrigger>().enabled = true;
+            foreach (Collider item in this.GetComponentsInChildren<Collider>())
+            {
+                item.enabled = true;
+            }
+        }
         // ... start the animation defined in Update() by changing the value of 'opening'
         // ... use 'audioSource' to play the AudioClip assigned to the AudioSource component
 
@@ -88,5 +124,6 @@ public class Door : MonoBehaviour
 
         // TODO: Unlock the door 
         // Unlock the door by changing the value of 'locked'
+        locked = !locked;
     }
 }
