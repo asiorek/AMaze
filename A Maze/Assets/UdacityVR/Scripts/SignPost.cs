@@ -7,14 +7,13 @@ using UnityEngine.SceneManagement;
 
 public class SignPost : MonoBehaviour
 {
-
     public void ResetScene()
     {
         /// Called when the 'SignPost' game object is clicked
         /// - Reloads the scene
 
         // Prints to the console when the method is called
-        Debug.Log("'SignPost.ResetScene()' was called");
+        Debug.Log("'SignPost.ResetScene()' was called. Score: " + Coin.scoreCollected);
 
         // TODO: Reset the scene by getting a reference to the scene and reloading it
         // Declare a Scene named 'scene', then use SceneManager.GetActiveScene () to get the current scene and assign it to 'scene'

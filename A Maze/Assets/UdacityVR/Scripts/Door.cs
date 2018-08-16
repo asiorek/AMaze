@@ -97,7 +97,11 @@ public class Door : MonoBehaviour
         {
             audioSource.clip = doorLocked;
             audioSource.Play();
-            this.GetComponent<GvrAllEventsTrigger>().enabled = true;
+            foreach (Collider collider in this.GetComponentsInChildren<Collider>())
+            {
+                collider.enabled = false;
+            }
+            //this.GetComponent<GvrAllEventsTrigger>().enabled = true;
             foreach (Collider item in this.GetComponentsInChildren<Collider>())
             {
                 item.enabled = true;
